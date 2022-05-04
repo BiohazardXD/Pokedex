@@ -1,4 +1,4 @@
-package com.code.pokedex.ui.slideshow
+package com.code.pokedex.presentation.ui.slideshow
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
