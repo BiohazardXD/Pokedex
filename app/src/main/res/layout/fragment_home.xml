@@ -18,7 +18,8 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/ic_search">
         <EditText
             android:id="@+id/search"
             android:layout_width="match_parent"
@@ -39,10 +40,12 @@
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_layout"
+        app:layout_constraintVertical_bias="1.0"
         tools:ignore="UnusedAttribute"
-        tools:listitem="@layout/pokemon_view_item"/>
+        tools:listitem="@layout/pokemon_view_item" />
 
     <ProgressBar
         android:id="@+id/progress_bar"

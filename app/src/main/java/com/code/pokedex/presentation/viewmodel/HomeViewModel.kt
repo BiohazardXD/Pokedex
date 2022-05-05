@@ -3,20 +3,34 @@ package com.code.pokedex.presentation.viewmodel
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.insertSeparators
+import androidx.paging.map
+import com.code.pokedex.domain.usescase.GetAllPokemons
 import com.code.pokedex.presentation.model.UiAction
 import com.code.pokedex.presentation.model.UiModel
 import com.code.pokedex.presentation.model.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 private const val LAST_QUERY_SCROLLED: String = "last_query_scrolled"
 private const val LAST_SEARCH_QUERY: String = "last_search_query"
 private const val DEFAULT_QUERY = "Pikachu"
+private val generations = listOf(
+    "Primera generación",
+    "Segunda generación",
+    "Tercera generación",
+    "Cuarta generación",
+    "Quinta generación",
+    "Sexta generación",
+    "Séptima generación",
+    "Octava generación"
+)
 
 @HiltViewModel
-class HomeViewModel(
-    private val getPokemons: GetPokemons,
+class HomeViewModel @Inject constructor(
+    private val getAllPokemons: GetAllPokemons,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -54,7 +68,10 @@ class HomeViewModel(
             .onStart { emit(UiAction.Scroll(currentQuery = lastQueryScrolled)) }
 
         pagingDataFlow = searches
-            .flatMapLatest { searchPokemon(queryString = it.query) }
+            .flatMapLatest {
+                //(queryString = it.query)
+                getPokemons()
+            }
             .cachedIn(viewModelScope)
 
         state = combine(
@@ -86,10 +103,57 @@ class HomeViewModel(
         super.onCleared()
     }
 
-    private fun searchPokemon(queryString: String): Flow<PagingData<UiModel>> =
+    private suspend fun getPokemons(): Flow<PagingData<UiModel>> =
+        getAllPokemons.execute().map { pagingData ->
+            pagingData.map {
+                UiModel.PokemonItem(it)
+            }
+        }.map {
+            it.insertSeparators { before, after ->
+                if (after == null) return@insertSeparators null
+
+                if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0])
+
+                if (before.pokemon.id < after.pokemon.id) {
+                    when(after.pokemon.id) {
+                        152 -> UiModel.SeparatorItem(generations[1])
+                        252 -> UiModel.SeparatorItem(generations[2])
+                        387 -> UiModel.SeparatorItem(generations[3])
+                        494 -> UiModel.SeparatorItem(generations[4])
+                        650 -> UiModel.SeparatorItem(generations[5])
+                        722 -> UiModel.SeparatorItem(generations[6])
+                        else -> UiModel.SeparatorItem(generations[7])
+                    }
+                } else {
+                    null
+                }
+            }
+        }
+    /*private fun searchPokemon(queryString: String): Flow<PagingData<UiModel>> =
         getPokemons.getSearchResultStream(queryString)
             .map { pagingData -> pagingData.map { UiModel.PokemonItem(it) } }
             .map {
+                it.insertSeparators { before, after ->
+                    if (after == null) {
+                        // we're at the end of the list
+                        return@insertSeparators null
+                    }
 
-            }
+                    if (before == null) {
+                        // we're at the beginning of the list
+                        return@insertSeparators UiModel.SeparatorItem("${after.roundedStarCount}0.000+ stars")
+                    }
+                    // check between 2 items
+                    if (before.roundedStarCount > after.roundedStarCount) {
+                        if (after.roundedStarCount >= 1) {
+                            UiModel.SeparatorItem("${after.roundedStarCount}0.000+ stars")
+                        } else {
+                            UiModel.SeparatorItem("< 10.000+ stars")
+                        }
+                    } else {
+                        // no separator
+                        null
+                    }
+                }
+            }*/
 }
