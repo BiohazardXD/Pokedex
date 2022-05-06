@@ -10,6 +10,7 @@ import com.code.pokedex.presentation.model.UiAction
 import com.code.pokedex.presentation.model.UiModel
 import com.code.pokedex.presentation.model.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +29,7 @@ private val generations = listOf(
     "Octava generación"
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getAllPokemons: GetAllPokemons,
@@ -66,7 +68,6 @@ class HomeViewModel @Inject constructor(
                 replay = 1
             )
             .onStart { emit(UiAction.Scroll(currentQuery = lastQueryScrolled)) }
-
         pagingDataFlow = searches
             .flatMapLatest {
                 //(queryString = it.query)
@@ -114,18 +115,16 @@ class HomeViewModel @Inject constructor(
 
                 if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0])
 
-                if (before.pokemon.id < after.pokemon.id) {
-                    when(after.pokemon.id) {
-                        152 -> UiModel.SeparatorItem(generations[1])
-                        252 -> UiModel.SeparatorItem(generations[2])
-                        387 -> UiModel.SeparatorItem(generations[3])
-                        494 -> UiModel.SeparatorItem(generations[4])
-                        650 -> UiModel.SeparatorItem(generations[5])
-                        722 -> UiModel.SeparatorItem(generations[6])
-                        else -> UiModel.SeparatorItem(generations[7])
-                    }
-                } else {
-                    null
+                when(after.pokemon.id) {
+                    //1 -> UiModel.SeparatorItem(generations[0])
+                    152 -> UiModel.SeparatorItem(generations[1])
+                    252 -> UiModel.SeparatorItem(generations[2])
+                    387 -> UiModel.SeparatorItem(generations[3])
+                    494 -> UiModel.SeparatorItem(generations[4])
+                    650 -> UiModel.SeparatorItem(generations[5])
+                    722 -> UiModel.SeparatorItem(generations[6])
+                    810 -> UiModel.SeparatorItem(generations[7])
+                    else -> null
                 }
             }
         }

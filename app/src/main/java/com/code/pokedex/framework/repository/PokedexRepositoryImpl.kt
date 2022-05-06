@@ -2,6 +2,7 @@ package com.code.pokedex.framework.repository
 
 import androidx.paging.*
 import com.code.pokedex.data.repository.PokedexRepository
+import com.code.pokedex.data.source.PokedexRemoteDataSource
 import com.code.pokedex.domain.model.Pokemon
 import com.code.pokedex.framework.source.local.PokedexDatabase
 import com.code.pokedex.framework.source.remote.PokedexService
@@ -11,8 +12,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PokedexRepositoryImpl @Inject constructor(
-    private val service: PokedexService,
-    private val database: PokedexDatabase
+    private val database: PokedexDatabase,
+    private val service: PokedexRemoteDataSource,
 ): PokedexRepository {
 
     override suspend fun getPokemons(): Flow<PagingData<Pokemon>> {
@@ -28,7 +29,8 @@ class PokedexRepositoryImpl @Inject constructor(
             pagingSourceFactory = pagingSourceFactory
         ).flow.map { data -> data.map { it.toDomainEntity() } }
     }
-    fun searchPokemonStream(query: String): Flow<PagingData<com.code.pokedex.framework.source.local.model.Pokemon>> {
+
+    fun searchPokemonStream(query: String): Flow<PagingData<Pokemon>> {
 
         val dbQuery = "%${query}%"
         val pagingSourceFactory = { database.pokedexDao().searchByName(dbQuery) }
@@ -41,7 +43,7 @@ class PokedexRepositoryImpl @Inject constructor(
                 service
             ),
             pagingSourceFactory = pagingSourceFactory
-        ).flow
+        ).flow.map { data -> data.map { it.toDomainEntity() } }
     }
 
     companion object {

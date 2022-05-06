@@ -1,14 +1,15 @@
 package com.code.pokedex.framework.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import com.code.pokedex.data.source.PokedexRemoteDataSource
 import com.code.pokedex.framework.source.local.PokedexDatabase
 import com.code.pokedex.framework.source.local.model.Pokemon
 import com.code.pokedex.framework.source.local.model.RemoteKeys
-import com.code.pokedex.framework.source.remote.PokedexService
 import com.code.pokedex.framework.source.remote.model.Chain
 import retrofit2.HttpException
 import java.io.IOException
@@ -19,7 +20,7 @@ private const val PAGE_LIMIT = 150
 @OptIn(ExperimentalPagingApi::class)
 class PokedexRemoteMediator(
     private val database: PokedexDatabase,
-    private val service: PokedexService
+    private val service: PokedexRemoteDataSource
 ) : RemoteMediator<Int, Pokemon>() {
 
     override suspend fun initialize(): InitializeAction {
@@ -83,22 +84,23 @@ class PokedexRemoteMediator(
                     val id = getPokemonId(result.url)
                     val pokemonResponse = service.getPokemon(id)
                     val types = pokemonResponse.types.map { it.type.name }
-                    val eChainId = getPokemonId(service.getPokemonSpecies(id).evolution_chain.url)
-                    val evolutions = getEvolutions(service.getEvolutionChain(eChainId).chain)
+                    //val eChainId = getPokemonId(service.getPokemonSpecies(id).evolution_chain.url)
+                    //val evolutions = getEvolutions(service.getEvolutionChain(eChainId).chain)
                     val moves = pokemonResponse.moves.map { it.move.name }
                     val abilities = pokemonResponse.abilities.map { it.ability.name }
-                    val locations = service.getLocationEncounters(id).map { it.location_area.name }
+                    //val locations = service.getLocationEncounters(id).map { it.location_area.name }
                     val pokemon = Pokemon(
                         id = pokemonResponse.id,
                         name = pokemonResponse.name,
                         types = types,
-                        evolution_chain = evolutions,
+                        evolution_chain = emptyList(),
                         moves = moves,
                         abilities = abilities,
-                        location_area_encounters = locations,
+                        location_area_encounters = emptyList(),
                         url = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${formatId(id)}.png",
                         favorite = false
                     )
+                    Log.e("POKE",pokemon.toString())
                     pokemons.add(pokemon)
                     RemoteKeys(id = pokemon.id, prevKey = prevKey, nextKey = nextKey)
                 }
@@ -119,7 +121,7 @@ class PokedexRemoteMediator(
         return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { pokemon ->
                 // Get the remote keys of the last item retrieved
-                database.remoteKeysDao().remoteKeysRepoId(pokemon.id)
+                database.remoteKeysDao().remoteKeysId(pokemon.id)
             }
     }
 
@@ -129,7 +131,7 @@ class PokedexRemoteMediator(
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { pokemon ->
                 // Get the remote keys of the first items retrieved
-                database.remoteKeysDao().remoteKeysRepoId(pokemon.id)
+                database.remoteKeysDao().remoteKeysId(pokemon.id)
             }
     }
 
@@ -140,7 +142,7 @@ class PokedexRemoteMediator(
         // Get the item closest to the anchor position
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let { id ->
-                database.remoteKeysDao().remoteKeysRepoId(id)
+                database.remoteKeysDao().remoteKeysId(id)
             }
         }
     }
@@ -150,16 +152,17 @@ class PokedexRemoteMediator(
         return parts.get(parts.size-2).toInt()
     }
 
+
+    fun formatId(id: Int): String = when(id.toString().length) {
+        1 -> "00${id}"
+        2 -> "0${id}"
+        else -> id.toString()
+    }
+
     fun getEvolutions(chain: Chain): List<Int> {
         val evolutions: MutableList<Int> = mutableListOf()
         getEvolutionsAux(chain, evolutions)
         return evolutions
-    }
-
-    fun formatId(id: Int): Int = when(id.toString().length) {
-        1 -> "00${id}".toInt()
-        2 -> "0${id}".toInt()
-        else -> id
     }
 
     private fun getEvolutionsAux(chain: Chain, evolutions: MutableList<Int>) {

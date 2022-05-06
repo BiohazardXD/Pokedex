@@ -10,6 +10,7 @@ import androidx.test.espresso.contrib.DrawerMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.code.pokedex.presentation.ui.MainActivity
+import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -21,20 +22,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
 
-    private val mockWebServer = MockWebServer()
-
-    @Before
-    fun setup() {
-        mockWebServer.start(8080)
-        val instance: OkHttpClient = OkHttpClient.Builder().build()
-        //val resource : IdlingResource = OkHttp3IdlingResource.create("okhttp", instance)
-        //IdlingRegistry.getInstance().register(resource)
-    }
-
-    @After
-    fun teardown() {
-        mockWebServer.shutdown()
-    }
 
     @Test
     fun testPokedexFragmentsNavigation() {

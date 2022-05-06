@@ -1,5 +1,6 @@
 package com.code.pokedex.framework.source.local.utils
 
+import android.util.Log
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -19,15 +20,14 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromInteger(value: Int?): List<Int> {
-        val listType = object :
-            TypeToken<ArrayList<Int?>?>() {}.type
-        return Gson().fromJson(value.toString(), listType)
+    fun fromInteger(value: Int?): List<Int?> {
+        return listOf(value)
     }
 
     @TypeConverter
-    fun fromList2(list: List<Int?>?): Int {
+    fun fromList(list: List<Int?>?): Int {
         val gson = Gson()
-        return gson.toJson(list).toInt()
+        Log.e("CONV", gson.toJson(list))
+        return gson.toJson(list).length
     }
 }
