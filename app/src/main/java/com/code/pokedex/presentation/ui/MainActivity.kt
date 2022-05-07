@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpUI() {
         binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "¡Atrapalos Ya!", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
         val drawerLayout: DrawerLayout = binding.drawerLayout

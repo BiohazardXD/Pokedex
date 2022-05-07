@@ -10,7 +10,7 @@ import com.code.pokedex.data.source.PokedexRemoteDataSource
 import com.code.pokedex.framework.source.local.PokedexDatabase
 import com.code.pokedex.framework.source.local.model.Pokemon
 import com.code.pokedex.framework.source.local.model.RemoteKeys
-import com.code.pokedex.framework.source.remote.model.Chain
+import com.code.pokedex.framework.utils.Utils
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -31,7 +31,10 @@ class PokedexRemoteMediator(
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, Pokemon>): MediatorResult {
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, Pokemon>
+    ): MediatorResult {
 
         val page = when (loadType) {
             LoadType.REFRESH -> {
@@ -81,11 +84,11 @@ class PokedexRemoteMediator(
                 val prevKey = if (page == STARTING_OFFSET_INDEX) null else page - PAGE_LIMIT
                 val nextKey = if (endOfPaginationReached) null else page + PAGE_LIMIT
                 val keys = results.map { result ->
-                    val id = getPokemonId(result.url)
+                    val id = Utils.getPokemonId(result.url)
                     val pokemonResponse = service.getPokemon(id)
                     val types = pokemonResponse.types.map { it.type.name }
-                    //val eChainId = getPokemonId(service.getPokemonSpecies(id).evolution_chain.url)
-                    //val evolutions = getEvolutions(service.getEvolutionChain(eChainId).chain)
+                    //val eChainId = Utils.getPokemonId(service.getPokemonSpecies(id).evolution_chain.url)
+                    //val evolutions = Utils.getEvolutions(service.getEvolutionChain(eChainId).chain)
                     val moves = pokemonResponse.moves.map { it.move.name }
                     val abilities = pokemonResponse.abilities.map { it.ability.name }
                     //val locations = service.getLocationEncounters(id).map { it.location_area.name }
@@ -97,10 +100,14 @@ class PokedexRemoteMediator(
                         moves = moves,
                         abilities = abilities,
                         location_area_encounters = emptyList(),
-                        url = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${formatId(id)}.png",
+                        url = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
+                            Utils.formatId(
+                                id
+                            )
+                        }.png",
                         favorite = false
                     )
-                    Log.e("POKE",pokemon.toString())
+                    Log.e("POKE", pokemon.toString())
                     pokemons.add(pokemon)
                     RemoteKeys(id = pokemon.id, prevKey = prevKey, nextKey = nextKey)
                 }
@@ -143,35 +150,6 @@ class PokedexRemoteMediator(
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let { id ->
                 database.remoteKeysDao().remoteKeysId(id)
-            }
-        }
-    }
-    //Funciones pendientes para mover a utils o convertir en fuciones de extensión
-    fun getPokemonId(url: String): Int {
-        val parts = url.split("/")
-        return parts.get(parts.size-2).toInt()
-    }
-
-
-    fun formatId(id: Int): String = when(id.toString().length) {
-        1 -> "00${id}"
-        2 -> "0${id}"
-        else -> id.toString()
-    }
-
-    fun getEvolutions(chain: Chain): List<Int> {
-        val evolutions: MutableList<Int> = mutableListOf()
-        getEvolutionsAux(chain, evolutions)
-        return evolutions
-    }
-
-    private fun getEvolutionsAux(chain: Chain, evolutions: MutableList<Int>) {
-        evolutions.add(getPokemonId(chain.species.url))
-        if (chain.evolves_to.isEmpty()){
-            return
-        } else {
-            chain.evolves_to.map {
-                getEvolutionsAux(it, evolutions)
             }
         }
     }

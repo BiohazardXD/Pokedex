@@ -16,14 +16,14 @@ class CircleView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) :
     View(context, attrs, defStyleAttr) {
-    private val circleColour: Int
+    private var circleColour: Int
     private val paint = Paint()
     private var circleRadius = 0f
     private var active = false
     private val activeColour: Int
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        paint.color = if (active) Color.RED else circleColour
+        paint.color = if (active) Color.DKGRAY else circleColour
         setBackgroundColor(Color.TRANSPARENT)
         canvas.drawCircle(circleRadius, circleRadius, circleRadius, paint)
     }
@@ -52,6 +52,10 @@ class CircleView @JvmOverloads constructor(
         return super.performClick()
     }
 
+    fun setColor(id: Int) {
+        circleColour = id
+    }
+
     init {
         val a = context.obtainStyledAttributes(
             attrs,
@@ -59,8 +63,8 @@ class CircleView @JvmOverloads constructor(
             defStyleAttr,
             0
         )
-        circleColour = a.getColor(R.styleable.CircleView_inactive_background, Color.RED)
-        activeColour = a.getColor(R.styleable.CircleView_active_background, Color.GRAY)
+        circleColour = a.getColor(R.styleable.CircleView_inactive_background, Color.DKGRAY)
+        activeColour = a.getColor(R.styleable.CircleView_active_background, Color.DKGRAY)
         a.recycle()
     }
 }

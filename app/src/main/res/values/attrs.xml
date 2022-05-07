@@ -4,4 +4,8 @@
         <attr name="inactive_background" format="color" />
         <attr name="active_background" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="Theme">
+        <attr name="colorBackground" format="color" />
+    </declare-styleable>
 </resources>

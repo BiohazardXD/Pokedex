@@ -24,6 +24,7 @@ import com.code.pokedex.presentation.ui.home.adapter.PokemonLoadStateAdapter
 import com.code.pokedex.presentation.ui.home.adapter.RemotePresentationState
 import com.code.pokedex.presentation.ui.home.adapter.asRemotePresentationState
 import com.code.pokedex.presentation.viewmodel.HomeViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -185,11 +186,12 @@ class HomeFragment : Fragment() {
                     ?: loadState.append as? LoadState.Error
                     ?: loadState.prepend as? LoadState.Error
                 errorState?.let {
-                    Toast.makeText(
+                    /*Toast.makeText(
                         requireContext(),
                         "\uD83D\uDE28 Wooops ${it.error}",
                         Toast.LENGTH_LONG
-                    ).show()
+                    ).show()*/
+                    Snackbar.make(binding.recycler, "\uD83D\uDE28 Wooops ${it.error}", Snackbar.LENGTH_LONG).show()
                 }
             }
         }
