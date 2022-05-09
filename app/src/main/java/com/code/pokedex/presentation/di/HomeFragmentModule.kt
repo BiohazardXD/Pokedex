@@ -1,9 +1,7 @@
 package com.code.pokedex.presentation.di
 
 import androidx.lifecycle.SavedStateHandle
-import com.code.pokedex.data.repository.PokedexRepository
 import com.code.pokedex.domain.usescase.GetAllPokemonsImpl
-import com.code.pokedex.domain.usescase.SearchPokemon
 import com.code.pokedex.domain.usescase.SearchPokemonImpl
 import com.code.pokedex.framework.repository.PokedexRepositoryImpl
 import com.code.pokedex.presentation.viewmodel.HomeViewModel

@@ -13,13 +13,13 @@
             app:showAsAction="ifRoom"/>
         <item
             android:id="@+id/nav_favorite"
-            android:icon="@drawable/pokedex_icon_20"
+            android:icon="@drawable/ic_favorite"
             android:title="@string/menu_favorite"
             android:checkable="true"
             app:showAsAction="ifRoom"/>
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/pokedex_icon_20"
             android:title="@string/menu_slideshow"
             android:checkable="true"
             app:showAsAction="ifRoom"/>

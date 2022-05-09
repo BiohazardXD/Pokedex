@@ -1,6 +1,5 @@
 package com.code.pokedex.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -73,12 +72,9 @@ class HomeViewModel @Inject constructor(
             .onStart { emit(UiAction.Scroll(currentQuery = lastQueryScrolled)) }
         pagingDataFlow = searches
             .flatMapLatest {
-                //(queryString = it.query)
                 if (it.query.isEmpty()) {
-                    Log.e("SEARCH", "ALL")
                     getPokemons()
                 } else {
-                    Log.e("SEARCH", "SEARCH")
                     searchPokemon(it.query)
                 }
             }
@@ -149,7 +145,7 @@ class HomeViewModel @Inject constructor(
 
                     if (before == null) {
                         // we're at the beginning of the list
-                        if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0].uppercase())
+                        return@insertSeparators UiModel.SeparatorItem(generations[0].uppercase())
                     }
                     // check between 2 items
                     when(after.pokemon.id) {

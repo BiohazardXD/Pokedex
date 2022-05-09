@@ -1,12 +1,14 @@
 package com.code.pokedex.presentation.ui.home
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -92,7 +94,8 @@ class HomeFragment : Fragment() {
     ) {
         search.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_GO) {
-                updateRepoListFromInput(onQueryChanged)
+                updatePokedexListFromInput(onQueryChanged)
+                context?.let { hideKeyboard(it,search) }
                 true
             } else {
                 false
@@ -100,7 +103,8 @@ class HomeFragment : Fragment() {
         }
         search.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                updateRepoListFromInput(onQueryChanged)
+                updatePokedexListFromInput(onQueryChanged)
+                context?.let { hideKeyboard(it,search) }
                 true
             } else {
                 false
@@ -115,12 +119,19 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun FragmentHomeBinding.updateRepoListFromInput(onQueryChanged: (UiAction.Search) -> Unit) {
+    private fun hideKeyboard(context: Context, view: View) {
+        val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
+    }
+
+    private fun FragmentHomeBinding.updatePokedexListFromInput(onQueryChanged: (UiAction.Search) -> Unit) {
         search.text.trim().let {
-            if (it.isNotEmpty()) {
-                recycler.scrollToPosition(0)
-                onQueryChanged(UiAction.Search(query = it.toString()))
-            }
+            recycler.scrollToPosition(0)
+            onQueryChanged(UiAction.Search(query = it.toString()))
+            /*if (it.isNotEmpty()) {
+
+            }*/
         }
     }
 
