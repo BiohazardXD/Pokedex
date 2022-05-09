@@ -1,6 +1,7 @@
 package com.code.pokedex.framework.utils
 
 import com.code.pokedex.framework.source.remote.model.Chain
+import java.lang.NumberFormatException
 
 class Utils {
 
@@ -31,6 +32,15 @@ class Utils {
                 chain.evolves_to.map {
                     getEvolutionsAux(it, evolutions)
                 }
+            }
+        }
+
+        fun isNumber(value: String): Boolean {
+            try {
+                value.toInt()
+                return true
+            } catch (e: NumberFormatException) {
+                return false
             }
         }
     }

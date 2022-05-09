@@ -2,7 +2,7 @@ package com.code.pokedex.presentation.model
 
 import com.code.pokedex.domain.model.Pokemon
 
-private const val DEFAULT_QUERY = "Pikachu"
+private const val DEFAULT_QUERY = ""
 
 sealed class UiAction {
     data class Search(val query: String) : UiAction()

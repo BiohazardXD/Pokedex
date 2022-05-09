@@ -1,11 +1,13 @@
 package com.code.pokedex.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.code.pokedex.domain.usescase.GetAllPokemons
+import com.code.pokedex.domain.usescase.SearchPokemon
 import com.code.pokedex.presentation.model.UiAction
 import com.code.pokedex.presentation.model.UiModel
 import com.code.pokedex.presentation.model.UiState
@@ -17,7 +19,7 @@ import javax.inject.Inject
 
 private const val LAST_QUERY_SCROLLED: String = "last_query_scrolled"
 private const val LAST_SEARCH_QUERY: String = "last_search_query"
-private const val DEFAULT_QUERY = "Pikachu"
+private const val DEFAULT_QUERY = ""
 private val generations = listOf(
     "Primera generación",
     "Segunda generación",
@@ -33,6 +35,7 @@ private val generations = listOf(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getAllPokemons: GetAllPokemons,
+    private val searchPokemon: SearchPokemon,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -71,7 +74,13 @@ class HomeViewModel @Inject constructor(
         pagingDataFlow = searches
             .flatMapLatest {
                 //(queryString = it.query)
-                getPokemons()
+                if (it.query.isEmpty()) {
+                    Log.e("SEARCH", "ALL")
+                    getPokemons()
+                } else {
+                    Log.e("SEARCH", "SEARCH")
+                    searchPokemon(it.query)
+                }
             }
             .cachedIn(viewModelScope)
 
@@ -113,23 +122,23 @@ class HomeViewModel @Inject constructor(
             it.insertSeparators { before, after ->
                 if (after == null) return@insertSeparators null
 
-                if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0])
+                if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0].uppercase())
 
                 when(after.pokemon.id) {
-                    //1 -> UiModel.SeparatorItem(generations[0])
-                    152 -> UiModel.SeparatorItem(generations[1])
-                    252 -> UiModel.SeparatorItem(generations[2])
-                    387 -> UiModel.SeparatorItem(generations[3])
-                    494 -> UiModel.SeparatorItem(generations[4])
-                    650 -> UiModel.SeparatorItem(generations[5])
-                    722 -> UiModel.SeparatorItem(generations[6])
-                    810 -> UiModel.SeparatorItem(generations[7])
+                    //1 -> UiModel.SeparatorItem(generations[0].uppercase())
+                    152 -> UiModel.SeparatorItem(generations[1].uppercase())
+                    252 -> UiModel.SeparatorItem(generations[2].uppercase())
+                    387 -> UiModel.SeparatorItem(generations[3].uppercase())
+                    494 -> UiModel.SeparatorItem(generations[4].uppercase())
+                    650 -> UiModel.SeparatorItem(generations[5].uppercase())
+                    722 -> UiModel.SeparatorItem(generations[6].uppercase())
+                    810 -> UiModel.SeparatorItem(generations[7].uppercase())
                     else -> null
                 }
             }
         }
-    /*private fun searchPokemon(queryString: String): Flow<PagingData<UiModel>> =
-        getPokemons.getSearchResultStream(queryString)
+    private suspend fun searchPokemon(queryString: String): Flow<PagingData<UiModel>> =
+        searchPokemon.execute(queryString)
             .map { pagingData -> pagingData.map { UiModel.PokemonItem(it) } }
             .map {
                 it.insertSeparators { before, after ->
@@ -140,19 +149,20 @@ class HomeViewModel @Inject constructor(
 
                     if (before == null) {
                         // we're at the beginning of the list
-                        return@insertSeparators UiModel.SeparatorItem("${after.roundedStarCount}0.000+ stars")
+                        if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0].uppercase())
                     }
                     // check between 2 items
-                    if (before.roundedStarCount > after.roundedStarCount) {
-                        if (after.roundedStarCount >= 1) {
-                            UiModel.SeparatorItem("${after.roundedStarCount}0.000+ stars")
-                        } else {
-                            UiModel.SeparatorItem("< 10.000+ stars")
-                        }
-                    } else {
-                        // no separator
-                        null
+                    when(after.pokemon.id) {
+                        in 1..151 -> UiModel.SeparatorItem(generations[0].uppercase())
+                        in 152..251 -> UiModel.SeparatorItem(generations[1].uppercase())
+                        in 252..386 -> UiModel.SeparatorItem(generations[2].uppercase())
+                        in 387..493 -> UiModel.SeparatorItem(generations[3].uppercase())
+                        in 494..649 -> UiModel.SeparatorItem(generations[4].uppercase())
+                        in 650..721 -> UiModel.SeparatorItem(generations[5].uppercase())
+                        in 722..809 -> UiModel.SeparatorItem(generations[6].uppercase())
+                        in 810..2000 -> UiModel.SeparatorItem(generations[7].uppercase())
+                        else -> null
                     }
                 }
-            }*/
+            }
 }

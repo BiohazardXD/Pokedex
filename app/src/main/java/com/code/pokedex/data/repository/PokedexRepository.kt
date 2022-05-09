@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface PokedexRepository {
     suspend fun getPokemons(): Flow<PagingData<Pokemon>>
+    suspend fun searchPokemon(query: String):  Flow<PagingData<Pokemon>>
 }

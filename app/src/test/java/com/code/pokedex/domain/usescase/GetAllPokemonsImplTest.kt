@@ -1,7 +1,6 @@
 package com.code.pokedex.domain.usescase
 
 import androidx.paging.PagingData
-import com.code.pokedex.domain.model.Pokemon
 import com.code.pokedex.framework.repository.PokedexRepositoryImpl
 import com.code.pokedex.utils.mokedPokemon
 import com.nhaarman.mockitokotlin2.whenever

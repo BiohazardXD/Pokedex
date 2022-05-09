@@ -38,7 +38,7 @@ interface PokedexService {
         @Path("id") id: Int
     ): List<EncountersResponse>
 
-    companion object {
+    /*companion object {
         private const val BASE_URL = "https://pokeapi.co/api/v2/"
 
         fun create(): PokedexService {
@@ -55,5 +55,5 @@ interface PokedexService {
                 .build()
                 .create(PokedexService::class.java)
         }
-    }
+    }*/
 }

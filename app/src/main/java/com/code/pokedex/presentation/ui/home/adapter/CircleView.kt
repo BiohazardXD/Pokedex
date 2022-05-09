@@ -20,10 +20,10 @@ class CircleView @JvmOverloads constructor(
     private val paint = Paint()
     private var circleRadius = 0f
     private var active = false
-    private val activeColour: Int
+    private var activeColour: Int
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        paint.color = if (active) Color.DKGRAY else circleColour
+        paint.color = if (active) Color.TRANSPARENT else circleColour
         setBackgroundColor(Color.TRANSPARENT)
         canvas.drawCircle(circleRadius, circleRadius, circleRadius, paint)
     }
@@ -54,6 +54,7 @@ class CircleView @JvmOverloads constructor(
 
     fun setColor(id: Int) {
         circleColour = id
+        activeColour = id
     }
 
     init {
@@ -63,8 +64,8 @@ class CircleView @JvmOverloads constructor(
             defStyleAttr,
             0
         )
-        circleColour = a.getColor(R.styleable.CircleView_inactive_background, Color.DKGRAY)
-        activeColour = a.getColor(R.styleable.CircleView_active_background, Color.DKGRAY)
+        circleColour = a.getColor(R.styleable.CircleView_inactive_background, Color.TRANSPARENT)
+        activeColour = a.getColor(R.styleable.CircleView_active_background, Color.TRANSPARENT)
         a.recycle()
     }
 }

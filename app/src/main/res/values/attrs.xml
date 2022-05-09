@@ -8,4 +8,5 @@
     <declare-styleable name="Theme">
         <attr name="colorBackground" format="color" />
     </declare-styleable>
+    <attr name="catalogToolbarStyle" format="reference"/>
 </resources>
