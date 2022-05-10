@@ -7,7 +7,6 @@ import com.code.pokedex.domain.model.Pokemon
 import com.code.pokedex.framework.source.local.PokedexDatabase
 import com.code.pokedex.framework.utils.toDomainEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -44,16 +43,8 @@ class PokedexRepositoryImpl @Inject constructor(
         ).flow.map { data -> data.map { it.toDomainEntity() } }
     }
 
-    fun searchPokemonById(id: Int): Flow<PagingData<Pokemon>> {
-        return flow {
-            emit(PagingData.from(listOf(database.pokedexDao().findById(id).toDomainEntity())))
-        }
-    }
-
-    fun searchPokemonStream(query: String): Flow<PagingData<Pokemon>> {
-
-        val dbQuery = "%${query}%"
-        val pagingSourceFactory = { database.pokedexDao().searchByName(dbQuery) }
+    override suspend fun searchPokemonById(id: Int): Flow<PagingData<Pokemon>> {
+        val pagingSourceFactory = { database.pokedexDao().findById(id) }
 
         @OptIn(ExperimentalPagingApi::class)
         return Pager(

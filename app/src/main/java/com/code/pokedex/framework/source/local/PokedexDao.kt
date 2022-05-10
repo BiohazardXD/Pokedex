@@ -27,7 +27,7 @@ interface PokedexDao {
     fun allFavorites(): PagingSource<Int, Pokemon>
 
     @Query("SELECT * FROM pokemon WHERE id = :id")
-    fun findById(id: Int): Pokemon
+    fun findById(id: Int): PagingSource<Int, Pokemon>
 
     @Query("DELETE FROM pokemon")
     suspend fun clearPokedex()

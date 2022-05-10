@@ -6,11 +6,13 @@ import com.code.pokedex.domain.model.Pokemon
 import kotlinx.coroutines.flow.Flow
 
 interface GetAllPokemons {
+
     suspend fun execute(): Flow<PagingData<Pokemon>>
 }
 
 class GetAllPokemonsImpl(
     private val pokedexRepository: PokedexRepository
-): GetAllPokemons {
+) : GetAllPokemons {
+
     override suspend fun execute(): Flow<PagingData<Pokemon>> = pokedexRepository.getPokemons()
 }

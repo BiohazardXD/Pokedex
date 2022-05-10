@@ -14,7 +14,7 @@ interface PokedexLocalDataSource {
 
     fun allFavorites(): PagingSource<Int, Pokemon>
 
-    fun findById(id: Int): Pokemon
+    fun findById(id: Int): PagingSource<Int, Pokemon>
 
     suspend fun clearPokedex()
 

@@ -26,7 +26,7 @@ class PokedexLocalDataSourceImpl(database: PokedexDatabase): PokedexLocalDataSou
         return pokedexDao.allFavorites()
     }
 
-    override fun findById(id: Int): Pokemon {
+    override fun findById(id: Int): PagingSource<Int,Pokemon> {
         return pokedexDao.findById(id)
     }
 

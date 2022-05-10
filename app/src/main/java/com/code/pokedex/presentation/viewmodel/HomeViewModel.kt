@@ -7,6 +7,8 @@ import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.code.pokedex.domain.usescase.GetAllPokemons
 import com.code.pokedex.domain.usescase.SearchPokemon
+import com.code.pokedex.domain.usescase.SearchPokemonById
+import com.code.pokedex.framework.utils.Utils
 import com.code.pokedex.presentation.model.UiAction
 import com.code.pokedex.presentation.model.UiModel
 import com.code.pokedex.presentation.model.UiState
@@ -35,9 +37,9 @@ private val generations = listOf(
 class HomeViewModel @Inject constructor(
     private val getAllPokemons: GetAllPokemons,
     private val searchPokemon: SearchPokemon,
+    private val searchPokemonById: SearchPokemonById,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
 
     /**
      * Stream of immutable states representative of the UI.
@@ -75,7 +77,11 @@ class HomeViewModel @Inject constructor(
                 if (it.query.isEmpty()) {
                     getPokemons()
                 } else {
-                    searchPokemon(it.query)
+                    if (Utils.isNumber(it.query)) {
+                        searchPokemonById(it.query.toInt())
+                    } else {
+                        searchPokemon(it.query)
+                    }
                 }
             }
             .cachedIn(viewModelScope)
@@ -120,7 +126,7 @@ class HomeViewModel @Inject constructor(
 
                 if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0].uppercase())
 
-                when(after.pokemon.id) {
+                when (after.pokemon.id) {
                     //1 -> UiModel.SeparatorItem(generations[0].uppercase())
                     152 -> UiModel.SeparatorItem(generations[1].uppercase())
                     252 -> UiModel.SeparatorItem(generations[2].uppercase())
@@ -133,6 +139,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+
     private suspend fun searchPokemon(queryString: String): Flow<PagingData<UiModel>> =
         searchPokemon.execute(queryString)
             .map { pagingData -> pagingData.map { UiModel.PokemonItem(it) } }
@@ -148,7 +155,30 @@ class HomeViewModel @Inject constructor(
                         return@insertSeparators UiModel.SeparatorItem(generations[0].uppercase())
                     }
                     // check between 2 items
-                    when(after.pokemon.id) {
+                    when (after.pokemon.id) {
+                        in 1..151 -> UiModel.SeparatorItem(generations[0].uppercase())
+                        in 152..251 -> UiModel.SeparatorItem(generations[1].uppercase())
+                        in 252..386 -> UiModel.SeparatorItem(generations[2].uppercase())
+                        in 387..493 -> UiModel.SeparatorItem(generations[3].uppercase())
+                        in 494..649 -> UiModel.SeparatorItem(generations[4].uppercase())
+                        in 650..721 -> UiModel.SeparatorItem(generations[5].uppercase())
+                        in 722..809 -> UiModel.SeparatorItem(generations[6].uppercase())
+                        in 810..2000 -> UiModel.SeparatorItem(generations[7].uppercase())
+                        else -> null
+                    }
+                }
+            }
+
+    private suspend fun searchPokemonById(id: Int): Flow<PagingData<UiModel>> =
+        searchPokemonById.execute(id)
+            .map { pagingData -> pagingData.map { UiModel.PokemonItem(it) } }
+            .map {
+                it.insertSeparators { before, after ->
+                    if (after == null) return@insertSeparators null
+
+                    if (before == null) return@insertSeparators UiModel.SeparatorItem(generations[0].uppercase())
+
+                    when (after.pokemon.id) {
                         in 1..151 -> UiModel.SeparatorItem(generations[0].uppercase())
                         in 152..251 -> UiModel.SeparatorItem(generations[1].uppercase())
                         in 252..386 -> UiModel.SeparatorItem(generations[2].uppercase())

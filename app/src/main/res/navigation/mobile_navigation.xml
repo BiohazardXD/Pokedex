@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.code.pokedex.presentation.ui.slideshow.SlideshowFragment"
+        android:name="com.code.pokedex.presentation.ui.caught.CaughtFragment"
         android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        tools:layout="@layout/fragment_caught" />
 </navigation>

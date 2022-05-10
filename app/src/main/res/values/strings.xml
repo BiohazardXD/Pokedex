@@ -2,13 +2,13 @@
     <string name="app_name">Pokedex</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Bienvenido entrenador</string>
+    <string name="nav_header_title">¡Bienvenido entrenador!</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="search_hint">Nombre o número</string>
     <string name="retry">Reintentar</string>
-    <string name="no_results">No hay resultados 😓</string>
+    <string name="no_results">No hay resultados 😓🦊</string>
     <string name="loading">Cargando</string>
 
     <string name="menu_home">Pokedex</string>

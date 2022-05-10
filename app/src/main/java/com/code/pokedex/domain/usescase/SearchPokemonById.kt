@@ -5,14 +5,14 @@ import com.code.pokedex.data.repository.PokedexRepository
 import com.code.pokedex.domain.model.Pokemon
 import kotlinx.coroutines.flow.Flow
 
-interface SearchPokemon {
+interface SearchPokemonById {
 
-    suspend fun execute(query: String): Flow<PagingData<Pokemon>>
+    suspend fun execute(id: Int): Flow<PagingData<Pokemon>>
 }
 
-class SearchPokemonImpl(
+class SearchPokemonByIdImpl(
     private val pokedexRepository: PokedexRepository
-) : SearchPokemon {
+) : SearchPokemonById {
 
-    override suspend fun execute(query: String): Flow<PagingData<Pokemon>> = pokedexRepository.searchPokemon(query)
+    override suspend fun execute(id: Int): Flow<PagingData<Pokemon>> = pokedexRepository.searchPokemonById(id)
 }
